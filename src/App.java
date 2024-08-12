@@ -5,9 +5,8 @@ import java.util.Scanner;
 
 public class App {
 
-    static Buscaminas game = new Buscaminas(new char[5][5], new int[3][2], false, false, new Random());
-
     public static void main(String[] args) {
+        Buscaminas game = new Buscaminas(new char[5][5], new int[3][2], false, false, new Random());
 
         try (Scanner sc = new Scanner(System.in)) {
             System.out.println("Bienvenido al buscaminas!");
@@ -42,5 +41,5 @@ public class App {
         } catch (Exception e) {
             System.err.println("Error: " + e);
         }
-    }    
+    }
 }
