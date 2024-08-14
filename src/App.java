@@ -17,7 +17,7 @@ public class App {
                 System.out.println("Introduce una coordenada Y:");
                 int userY = sc.nextInt();
 
-                if (userY < 0 || userY >= 5 || userX < 0 || userX >= 5) {
+                if (userY < 0 || userY >= game.getMatriz().length || userX < 0 || userX >= game.getMatriz().length) {
                     System.out.println("Coordenadas fuera de rango. Por favor, introduce coordenadas válidas.");
                     continue;
                 }

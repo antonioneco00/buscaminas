@@ -68,8 +68,8 @@ public class Buscaminas {
 
     public void setMinas(int[][] minas, int userY, int userX) {
         for (int i = 0; i < minas.length; i++) {
-            int randomEjeY = random.nextInt(5);
-            int randomEjeX = random.nextInt(5);
+            int randomEjeY = random.nextInt(matriz.length);
+            int randomEjeX = random.nextInt(matriz.length);
 
             int[] newMina = {randomEjeY, randomEjeX};
 
@@ -147,8 +147,8 @@ public class Buscaminas {
             System.out.println(Arrays.toString(choice));
         } */
 
-        for (int x = 0; x < 5; x++) {
-            for (int y = 0; y < 5; y++) {
+        for (int x = 0; x < matriz.length; x++) {
+            for (int y = 0; y < matriz[0].length; y++) {
                 /* if (matriz[x][y] != '0' && matriz[x][y] != '+') {
                     System.out.println("La coordenada [" + x + ", " + y + "] puede ser unknown");
                 }
@@ -161,12 +161,12 @@ public class Buscaminas {
                 int[] currCell = {x, y};
 
                 for (int i = -1; i < 2; i++) {
-                    if (x + i < 0 || x + i > 4) {
+                    if (x + i < 0 || x + i > matriz.length - 1) {
                         continue;
                     }
 
                     for (int j = -1; j < 2; j++) {
-                        if (y + j < 0 || y + j > 4) {
+                        if (y + j < 0 || y + j > matriz[0].length - 1) {
                             continue;
                         }
 
