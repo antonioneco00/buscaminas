@@ -1,4 +1,5 @@
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -8,53 +9,53 @@ public class Buscaminas {
     private final int minas[][];
     private boolean isInitialized;
     private boolean gameOver;
-    private Random random;
+    private final Random random;
 
-    public Buscaminas(char[][] matriz, int[][] minas, boolean isInitialized, boolean gameOver, Random random) {
+    public Buscaminas(char[][] matriz, int[][] minas, boolean isInitialized, boolean gameOver) {
         this.matriz = matriz;
         this.minas = minas;
         this.isInitialized = isInitialized;
         this.gameOver = gameOver;
-        this.random = random;
+        this.random = new Random();
     }
 
     public char[][] getMatriz() {
         return matriz;
     }
 
-    public void setMatriz(int[] userChoice) {
-        for (int i = 0; i < this.getMatriz().length; i++) {
-            for (int j = 0; j < this.getMatriz()[0].length; j++) {
+    public void setMatriz(ArrayList<int[]> userChoices) {
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz[0].length; j++) {
                 boolean isMina = false;
                 boolean isUserChoice = false;
 
                 int[] celdaActual = {i, j};
                 int nearbyMinas = 0;
 
-                for (int[] array : this.getMinas()) {
-                    int distToMinaX = Math.abs(array[0] - i);
-                    int distToMinaY = Math.abs(array[1] - j);
+                for (int[] array : minas) {
+                    int distToMinaY = Math.abs(array[0] - i);
+                    int distToMinaX = Math.abs(array[1] - j);
 
                     if (Arrays.equals(array, celdaActual)) {
                         isMina = true;
-                    } else if (distToMinaX <= 1 && distToMinaY <= 1) {
+                    } else if (distToMinaY <= 1 && distToMinaX <= 1) {
                         nearbyMinas++;
                     }
                 }
 
-                if (Arrays.equals(userChoice, celdaActual)) {
-                    isUserChoice = true;
+                for (int[] choice : userChoices) {
+                    if (Arrays.equals(choice, celdaActual)) {
+                        isUserChoice = true;
+                    }
                 }
 
                 if (isMina) {
-                    this.getMatriz()[i][j] = isUserChoice ? 'x' : '*';
+                    matriz[i][j] = isUserChoice ? 'x' : '*';
 
                     if (isUserChoice) {
-                        this.setGameOver(true);
+                        setGameOver(true);
                     }
-                } else if (isUserChoice) {
-                    matriz[i][j] = '+';
-                } else if (matriz[i][j] != '+') {
+                } else {
                     matriz[i][j] = (char) (nearbyMinas + '0');
                 }
             }
@@ -65,16 +66,16 @@ public class Buscaminas {
         return minas;
     }
 
-    public void setMinas(int[][] minas, Random random, int userX, int userY) {
-        for (int i = 0; i < 3; i++) {
-            int randomEjeX = random.nextInt(5);
+    public void setMinas(int[][] minas, int userY, int userX) {
+        for (int i = 0; i < minas.length; i++) {
             int randomEjeY = random.nextInt(5);
+            int randomEjeX = random.nextInt(5);
 
-            int[] newMina = {randomEjeX, randomEjeY};
+            int[] newMina = {randomEjeY, randomEjeX};
 
             boolean uniqueMinas = true;
 
-            for (int[] array : this.getMinas()) {
+            for (int[] array : minas) {
                 if (Arrays.equals(array, newMina)) {
                     i--;
                     System.out.println("La mina se repite.\nMina existente: " + Arrays.toString(array) + ". Mina generada: " + Arrays.toString(newMina) + "\nGenerando nueva mina...");
@@ -86,14 +87,14 @@ public class Buscaminas {
                 continue;
             }
 
-            if (randomEjeX == userX && randomEjeY == userY) {
+            if (randomEjeY == userY && randomEjeX == userX) {
                 i--;
                 System.out.println("La mina coincide. X: " + randomEjeX + ". Y: " + randomEjeY);
                 continue;
             }
 
-            minas[i][0] = randomEjeX;
-            minas[i][1] = randomEjeY;
+            minas[i][0] = randomEjeY;
+            minas[i][1] = randomEjeX;
         }
     }
 
@@ -113,25 +114,81 @@ public class Buscaminas {
         this.gameOver = gameOver;
     }
 
-    public Random getRandom() {
-        return random;
-    }
-
-    public void setRandom(Random random) {
-        this.random = random;
-    }
-
     public void printScheme() {
-        for (char[] array : this.matriz) {
+        int countUnknown = 0;
+
+        for (char[] array : matriz) {
             for (char celda : array) {
                 System.out.print(celda + " ");
+                
+                if (celda == '?') {
+                    countUnknown++;
+                }
             }
 
             System.out.println();
         }
 
-        if (this.isGameOver()) {
+        if (gameOver) {
             System.out.println("\nFin del juego. Has explotado una mina.");
+
+            return;
+        }
+
+        if (countUnknown == minas.length) {
+            setGameOver(true);
+
+            System.out.println("\nFelicidades! Has terminado el juego :)");
+        }
+    }
+
+    public void setUnknownCells(ArrayList<int[]> userChoices) {
+        /* for (int[] choice : userChoices) {
+            System.out.println(Arrays.toString(choice));
+        } */
+
+        for (int x = 0; x < 5; x++) {
+            for (int y = 0; y < 5; y++) {
+                /* if (matriz[x][y] != '0' && matriz[x][y] != '+') {
+                    System.out.println("La coordenada [" + x + ", " + y + "] puede ser unknown");
+                }
+
+                if (x == 0 && y == 0) {
+                    System.out.println("Celdas checkeadas para [0, 0]:");
+                } */
+
+                boolean setToUnknown = true;
+                int[] currCell = {x, y};
+
+                for (int i = -1; i < 2; i++) {
+                    if (x + i < 0 || x + i > 4) {
+                        continue;
+                    }
+
+                    for (int j = -1; j < 2; j++) {
+                        if (y + j < 0 || y + j > 4) {
+                            continue;
+                        }
+
+                        /* if (x == 0 && y == 0) {
+                            System.out.println("[" + (x + i) + ", " + (y + j) + "]: " + matriz[x + i][y + j]);
+                        } */
+                        if (matriz[x + i][y + j] == '0') {
+                            setToUnknown = false;
+                        }
+                    }
+                }
+
+                for (int[] choice : userChoices) {
+                    if (Arrays.equals(choice, currCell)) {
+                        setToUnknown = false;
+                    }
+                }
+
+                if (setToUnknown) {
+                    matriz[x][y] = '?';
+                }
+            }
         }
     }
 }

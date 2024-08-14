@@ -1,15 +1,14 @@
 
-import java.util.Arrays;
-import java.util.Random;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class App {
 
     public static void main(String[] args) {
-        Buscaminas game = new Buscaminas(new char[5][5], new int[3][2], false, false, new Random());
-
         try (Scanner sc = new Scanner(System.in)) {
+            Buscaminas game = new Buscaminas(new char[5][5], new int[5][2], false, false);
             System.out.println("Bienvenido al buscaminas!");
+            ArrayList<int[]> userChoices = new ArrayList<>();
 
             while (!game.isGameOver()) {
                 System.out.println("Introduce una coordenada X:");
@@ -18,23 +17,29 @@ public class App {
                 System.out.println("Introduce una coordenada Y:");
                 int userY = sc.nextInt();
 
-                int[] userChoice = {userX, userY};
+                if (userY < 0 || userY >= 5 || userX < 0 || userX >= 5) {
+                    System.out.println("Coordenadas fuera de rango. Por favor, introduce coordenadas válidas.");
+                    continue;
+                }
 
-                System.out.println("Has introducido las coordenadas:\n" + Arrays.toString(userChoice));
+                int[] userChoice = {userY, userX};
+                userChoices.add(userChoice);
+
+                System.out.println("Has introducido las coordenadas:\n[" + userY + ", " + userX + "]");
 
                 if (!game.isInitialized()) {
-                    game.setMinas(game.getMinas(), game.getRandom(), userX, userY);
+                    game.setMinas(game.getMinas(), userY, userX);
                 }
 
                 game.setInitialized(true);
 
-                System.out.println("Coordenadas de las minas:");
+                /* System.out.println("Coordenadas de las minas:");
 
                 for (int i = 0; i < 3; i++) {
                     System.out.println(Arrays.toString(game.getMinas()[i]));
-                }
-
-                game.setMatriz(userChoice);
+                } */
+                game.setMatriz(userChoices);
+                game.setUnknownCells(userChoices);
                 game.printScheme();
                 System.out.println();
             }
